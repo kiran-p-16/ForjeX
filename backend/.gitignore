@@ -2,4 +2,6 @@ node_modules/
 .env
 uploads/
 .myGit/
+commit.json
+hello.txt
 *.log

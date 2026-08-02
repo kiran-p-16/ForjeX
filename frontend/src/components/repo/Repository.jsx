@@ -17,6 +17,16 @@ const Repository = () => {
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState("");
 
+  // AI Features State in Repo View
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState(null);
+  const [showSearchModal, setShowSearchModal] = useState(false);
+
+  const [readmeLoading, setReadmeLoading] = useState(false);
+  const [generatedReadme, setGeneratedReadme] = useState("");
+  const [showReadmeModal, setShowReadmeModal] = useState(false);
+
   const [openFolders, setOpenFolders] = useState({});
 
   const fileRef = useRef(null);
@@ -41,6 +51,39 @@ const Repository = () => {
   useEffect(() => {
     fetchRepo();
   }, [id]);
+
+  // AI Feature 3: Natural Language Code Search
+  const handleAiSearch = async (e) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+
+    try {
+      setSearchLoading(true);
+      setShowSearchModal(true);
+      const { data } = await API.post(`/ai/search/${id}`, {
+        query: searchQuery,
+      });
+      setSearchResults(data);
+    } catch (err) {
+      console.error("AI Search Error:", err);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  // AI Feature 4: Generate README
+  const handleGenerateReadme = async () => {
+    setShowReadmeModal(true);
+    try {
+      setReadmeLoading(true);
+      const { data } = await API.post(`/ai/docs/${id}/readme`);
+      setGeneratedReadme(data.readme);
+    } catch (err) {
+      console.error("Readme Gen Error:", err);
+    } finally {
+      setReadmeLoading(false);
+    }
+  };
 
   const uploadToRepo = async (files, isFolder) => {
     if (!files || !files.length) return;
@@ -187,7 +230,14 @@ const Repository = () => {
             style={{ paddingLeft: `${level * 18}px` }}
           >
             <span className="file-icon">📄</span>
-            <span className="file-name clickable" onClick={() => navigate(`/repo/${id}/view?path=${encodeURIComponent(currentPath)}`)}>{name}</span>
+            <span
+              className="file-name clickable"
+              onClick={() =>
+                navigate(`/repo/${id}/view?path=${encodeURIComponent(currentPath)}`)
+              }
+            >
+              {name}
+            </span>
 
             {isOwner && (
               <button
@@ -268,6 +318,7 @@ const Repository = () => {
       <Navbar />
 
       <section className="repo-wrapper">
+        {/* Top Header */}
         <div className="repo-header">
           <div>
             <h2>{repo.name}</h2>
@@ -279,12 +330,15 @@ const Repository = () => {
               {repo.visibility ? "Public" : "Private"}
             </span>
 
+            {/* AI Generate README button */}
+            <button className="btn ai-btn" onClick={handleGenerateReadme}>
+              ✨ Gen README
+            </button>
+
             {isOwner && (
               <>
                 <button
-                  className={`btn ghost upload-btn ${
-                    uploading ? "disabled" : ""
-                  }`}
+                  className={`btn ghost upload-btn ${uploading ? "disabled" : ""}`}
                   onClick={openFilePicker}
                   disabled={uploading}
                 >
@@ -292,17 +346,18 @@ const Repository = () => {
                 </button>
 
                 <button
-                  className={`btn ghost upload-btn ${
-                    uploading ? "disabled" : ""
-                  }`}
+                  className={`btn ghost upload-btn ${uploading ? "disabled" : ""}`}
                   onClick={openFolderPicker}
                   disabled={uploading}
                 >
                   {uploading ? "Uploading…" : "Upload folder"}
                 </button>
 
-                <button className="btn ghost" onClick={() => navigate(`/repo/${id}/issues`)}>
-                    Issues
+                <button
+                  className="btn ghost"
+                  onClick={() => navigate(`/repo/${id}/issues`)}
+                >
+                  Issues
                 </button>
 
                 <button className="btn ghost" onClick={() => setShowEdit(true)}>
@@ -338,6 +393,19 @@ const Repository = () => {
             )}
           </div>
         </div>
+
+        {/* Feature 3: Natural Language Code Search Bar */}
+        <form className="ai-search-bar" onSubmit={handleAiSearch}>
+          <input
+            type="text"
+            placeholder="Ask AI about this codebase (e.g. 'Where are database models defined?' or 'How is auth checked?')"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <button type="submit" className="btn ai-btn">
+            🔍 AI Search
+          </button>
+        </form>
 
         <div className="repo-layout">
           <aside className="panel repo-info">
@@ -378,12 +446,107 @@ const Repository = () => {
         </div>
       </section>
 
+      {/* Edit Modal */}
       {showEdit && (
         <EditRepoModal
           repo={repo}
           onClose={() => setShowEdit(false)}
           onUpdated={fetchRepo}
         />
+      )}
+
+      {/* AI Search Results Modal */}
+      {showSearchModal && (
+        <div className="modal-overlay" onClick={() => setShowSearchModal(false)}>
+          <div className="modal-box ai-search-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>🔍 AI Codebase Intelligence Search</h3>
+              <button className="modal-close" onClick={() => setShowSearchModal(false)}>
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              {searchLoading ? (
+                <div className="ai-loading">
+                  <div className="spinner"></div>
+                  <p>Searching codebase using Gemini AI…</p>
+                </div>
+              ) : searchResults ? (
+                <>
+                  <div className="ai-answer-box">
+                    <h4>AI Answer</h4>
+                    <p>{searchResults.answer}</p>
+                  </div>
+
+                  <h4>Relevant Matches ({searchResults.matches?.length || 0})</h4>
+                  {searchResults.matches?.map((m, idx) => (
+                    <div key={idx} className="match-card">
+                      <div className="match-header">
+                        <span
+                          className="file-path clickable"
+                          onClick={() => {
+                            setShowSearchModal(false);
+                            navigate(`/repo/${id}/view?path=${encodeURIComponent(m.filePath)}`);
+                          }}
+                        >
+                          📄 {m.filePath}
+                        </span>
+                        <span className={`relevance ${m.relevance?.toLowerCase()}`}>
+                          {m.relevance} Relevance
+                        </span>
+                      </div>
+                      <p className="match-explanation">{m.explanation}</p>
+                      {m.snippet && <pre className="snippet-code">{m.snippet}</pre>}
+                    </div>
+                  ))}
+                </>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* AI Generate README Modal */}
+      {showReadmeModal && (
+        <div className="modal-overlay" onClick={() => setShowReadmeModal(false)}>
+          <div className="modal-box readme-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>✨ AI Generated README.md</h3>
+              <button className="modal-close" onClick={() => setShowReadmeModal(false)}>
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              {readmeLoading ? (
+                <div className="ai-loading">
+                  <div className="spinner"></div>
+                  <p>Analyzing project structure and writing README.md…</p>
+                </div>
+              ) : (
+                <textarea
+                  className="readme-textarea"
+                  rows={15}
+                  value={generatedReadme}
+                  onChange={(e) => setGeneratedReadme(e.target.value)}
+                />
+              )}
+            </div>
+            <div className="modal-footer">
+              <button className="btn ghost" onClick={() => setShowReadmeModal(false)}>
+                Close
+              </button>
+              <button
+                className="btn primary"
+                onClick={() => {
+                  navigator.clipboard.writeText(generatedReadme);
+                  alert("README copied to clipboard!");
+                }}
+              >
+                Copy Markdown
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );
