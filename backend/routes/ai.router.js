@@ -6,6 +6,11 @@ const { triageIssue } = require("../services/ai/issueTriageAgent");
 const { generateRepoReadme, generateFileDocs } = require("../services/ai/docGenerator");
 const { generateCommitMessage, generateChangelog } = require("../services/ai/commitIntelligence");
 const { searchCodebase } = require("../services/ai/semanticSearch");
+const { resolveIssueWithAgent } = require("../services/ai/aiAgentResolver");
+const { generateArchitectureGraph } = require("../services/ai/architectureGraph");
+const { generateTestSuite } = require("../services/ai/testGenerator");
+const { performMultiFileRefactor } = require("../services/ai/multiFileRefactor");
+const { auditAndPatchSecurity } = require("../services/ai/securityPatcher");
 const AiReview = require("../models/aiReviewModel");
 
 const aiRouter = express.Router();
@@ -114,6 +119,69 @@ aiRouter.post("/ai/search/:repoId", authMiddleware, async (req, res) => {
   } catch (err) {
     console.error("AI Search Error:", err);
     res.status(500).json({ error: "AI Code Search failed" });
+  }
+});
+
+// ⚡ FUNDAMENTAL AGENT 1: Autonomous Issue-to-PR Resolver Agent
+aiRouter.post("/ai/agent/resolve-issue/:issueId", authMiddleware, async (req, res) => {
+  try {
+    const prFix = await resolveIssueWithAgent(req.params.issueId);
+    res.json(prFix);
+  } catch (err) {
+    console.error("AI Resolver Agent Error:", err);
+    res.status(500).json({ error: "AI Resolver Agent failed" });
+  }
+});
+
+// ⚡ FUNDAMENTAL AGENT 2: Repository Architecture Graph Generator
+aiRouter.get("/ai/architecture/:repoId", authMiddleware, async (req, res) => {
+  try {
+    const graph = await generateArchitectureGraph(req.params.repoId);
+    res.json(graph);
+  } catch (err) {
+    console.error("AI Architecture Graph Error:", err);
+    res.status(500).json({ error: "Architecture Graph generation failed" });
+  }
+});
+
+// ⚡ FUNDAMENTAL AGENT 3: Autonomous Test Suite Generator
+aiRouter.post("/ai/test/generate", authMiddleware, async (req, res) => {
+  try {
+    const { code, filePath, framework } = req.body;
+    if (!code) {
+      return res.status(400).json({ error: "Code content is required" });
+    }
+    const testSuite = await generateTestSuite(code, filePath, framework);
+    res.json(testSuite);
+  } catch (err) {
+    console.error("AI Test Generator Error:", err);
+    res.status(500).json({ error: "Test Suite generation failed" });
+  }
+});
+
+// ⚡ FUNDAMENTAL AGENT 4: Agentic Multi-File Refactoring Engine
+aiRouter.post("/ai/refactor/:repoId", authMiddleware, async (req, res) => {
+  try {
+    const { instruction } = req.body;
+    if (!instruction) {
+      return res.status(400).json({ error: "Refactor instruction is required" });
+    }
+    const refactorResult = await performMultiFileRefactor(req.params.repoId, instruction);
+    res.json(refactorResult);
+  } catch (err) {
+    console.error("AI Multi-File Refactor Error:", err);
+    res.status(500).json({ error: "Multi-File Refactoring failed" });
+  }
+});
+
+// ⚡ FUNDAMENTAL AGENT 5: AI Security SAST & Vulnerability Auto-Patcher
+aiRouter.post("/ai/security/patch/:repoId", authMiddleware, async (req, res) => {
+  try {
+    const patchResult = await auditAndPatchSecurity(req.params.repoId);
+    res.json(patchResult);
+  } catch (err) {
+    console.error("AI Security Patch Error:", err);
+    res.status(500).json({ error: "Security SAST Auto-Patcher failed" });
   }
 });
 

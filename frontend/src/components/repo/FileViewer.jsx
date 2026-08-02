@@ -139,6 +139,28 @@ const FileViewer = () => {
     }
   };
 
+  const [unitTests, setUnitTests] = useState(null);
+
+  // Fundamental Agent 3: Autonomous Test Generator
+  const handleGenerateTests = async () => {
+    setAiDrawerOpen(true);
+    setAiTab("tests");
+
+    try {
+      setAiLoading(true);
+      const { data } = await API.post("/ai/test/generate", {
+        code: text,
+        filePath,
+        framework: "jest",
+      });
+      setUnitTests(data);
+    } catch (err) {
+      console.error("Test Gen error:", err);
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   // AI Feature 4: Generate File Docs
   const handleGenerateDocs = async () => {
     setAiDrawerOpen(true);
@@ -264,6 +286,9 @@ const FileViewer = () => {
             <button className="btn ai-btn" onClick={handleGenerateDocs}>
               📝 Gen Docs
             </button>
+            <button className="btn ai-btn" onClick={handleGenerateTests}>
+              🧪 Gen Tests
+            </button>
 
             <button className="btn ghost" onClick={downloadFile} disabled={downloading}>
               {downloading ? "Downloading…" : "Download"}
@@ -336,6 +361,12 @@ const FileViewer = () => {
                     onClick={handleGenerateDocs}
                   >
                     📝 Docs
+                  </button>
+                  <button
+                    className={aiTab === "tests" ? "active" : ""}
+                    onClick={handleGenerateTests}
+                  >
+                    🧪 Tests
                   </button>
                 </div>
                 <button className="close-btn" onClick={() => setAiDrawerOpen(false)}>
@@ -437,6 +468,17 @@ const FileViewer = () => {
                       <div className="ai-section">
                         <h4>Generated Documentation</h4>
                         <pre className="docs-preview">{fileDocs}</pre>
+                      </div>
+                    )}
+
+                    {/* TAB 4: AUTONOMOUS UNIT TESTS */}
+                    {aiTab === "tests" && unitTests && (
+                      <div className="ai-section">
+                        <div className="ai-badge complexity-badge">
+                          Est. Coverage: <strong>{unitTests.estimatedCoverage}</strong>
+                        </div>
+                        <h4>Generated Test Suite ({unitTests.testFileName})</h4>
+                        <pre className="docs-preview">{unitTests.testCode}</pre>
                       </div>
                     )}
                   </>

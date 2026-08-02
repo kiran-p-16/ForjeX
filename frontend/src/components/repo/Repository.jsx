@@ -27,6 +27,65 @@ const Repository = () => {
   const [generatedReadme, setGeneratedReadme] = useState("");
   const [showReadmeModal, setShowReadmeModal] = useState(false);
 
+  // Fundamental Agent 2: Architecture Graph
+  const [archLoading, setArchLoading] = useState(false);
+  const [archData, setArchData] = useState(null);
+  const [showArchModal, setShowArchModal] = useState(false);
+
+  // Fundamental Agent 4: Multi-File Refactor
+  const [refactorPrompt, setRefactorPrompt] = useState("");
+  const [refactorLoading, setRefactorLoading] = useState(false);
+  const [refactorData, setRefactorData] = useState(null);
+  const [showRefactorModal, setShowRefactorModal] = useState(false);
+
+  // Fundamental Agent 5: Security SAST Auto-Patcher
+  const [secLoading, setSecLoading] = useState(false);
+  const [secData, setSecData] = useState(null);
+  const [showSecModal, setShowSecModal] = useState(false);
+
+  const handleFetchArchitecture = async () => {
+    setShowArchModal(true);
+    try {
+      setArchLoading(true);
+      const { data } = await API.get(`/ai/architecture/${id}`);
+      setArchData(data);
+    } catch (err) {
+      console.error("Architecture error:", err);
+    } finally {
+      setArchLoading(false);
+    }
+  };
+
+  const handleRunRefactor = async (e) => {
+    e.preventDefault();
+    if (!refactorPrompt.trim()) return;
+
+    try {
+      setRefactorLoading(true);
+      const { data } = await API.post(`/ai/refactor/${id}`, {
+        instruction: refactorPrompt,
+      });
+      setRefactorData(data);
+    } catch (err) {
+      console.error("Refactor error:", err);
+    } finally {
+      setRefactorLoading(false);
+    }
+  };
+
+  const handleRunSecurityAudit = async () => {
+    setShowSecModal(true);
+    try {
+      setSecLoading(true);
+      const { data } = await API.post(`/ai/security/patch/${id}`);
+      setSecData(data);
+    } catch (err) {
+      console.error("Security audit error:", err);
+    } finally {
+      setSecLoading(false);
+    }
+  };
+
   const [openFolders, setOpenFolders] = useState({});
 
   const fileRef = useRef(null);
@@ -330,9 +389,18 @@ const Repository = () => {
               {repo.visibility ? "Public" : "Private"}
             </span>
 
-            {/* AI Generate README button */}
+            {/* AI Action Buttons */}
             <button className="btn ai-btn" onClick={handleGenerateReadme}>
               ✨ Gen README
+            </button>
+            <button className="btn ai-btn" onClick={handleFetchArchitecture}>
+              🕸️ Arch Map
+            </button>
+            <button className="btn ai-btn" onClick={() => setShowRefactorModal(true)}>
+              ⚡ AI Refactor
+            </button>
+            <button className="btn ai-btn" onClick={handleRunSecurityAudit}>
+              🛡️ SAST Audit
             </button>
 
             {isOwner && (
@@ -544,6 +612,135 @@ const Repository = () => {
               >
                 Copy Markdown
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Fundamental Agent 2: Architecture Graph Modal */}
+      {showArchModal && (
+        <div className="modal-overlay" onClick={() => setShowArchModal(false)}>
+          <div className="modal-box readme-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>🕸️ Codebase Architecture & Data Flow Graph</h3>
+              <button className="modal-close" onClick={() => setShowArchModal(false)}>
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              {archLoading ? (
+                <div className="ai-loading">
+                  <div className="spinner"></div>
+                  <p>Analyzing AST imports and mapping system architecture…</p>
+                </div>
+              ) : archData ? (
+                <>
+                  <p className="repo-desc">{archData.architectureOverview}</p>
+                  <h4>Mermaid Architecture Diagram</h4>
+                  <pre className="docs-preview">{archData.mermaidDiagram}</pre>
+                  <h4>System Components ({archData.components?.length || 0})</h4>
+                  {archData.components?.map((c, i) => (
+                    <div key={i} className="match-card">
+                      <strong>{c.name}</strong>
+                      <p className="match-explanation">{c.role}</p>
+                    </div>
+                  ))}
+                </>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Fundamental Agent 4: Multi-File Refactor Modal */}
+      {showRefactorModal && (
+        <div className="modal-overlay" onClick={() => setShowRefactorModal(false)}>
+          <div className="modal-box readme-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>⚡ Agentic Multi-File Refactoring Engine</h3>
+              <button className="modal-close" onClick={() => setShowRefactorModal(false)}>
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              <form onSubmit={handleRunRefactor}>
+                <label className="issues-label">Describe Codebase Refactoring Task:</label>
+                <input
+                  className="issues-input"
+                  placeholder="e.g. 'Add error handling try-catch blocks to all controllers' or 'Migrate callbacks to async/await'"
+                  value={refactorPrompt}
+                  onChange={(e) => setRefactorPrompt(e.target.value)}
+                />
+                <button type="submit" className="btn ai-btn" style={{ marginTop: "10px" }}>
+                  Run Agentic Refactor
+                </button>
+              </form>
+
+              {refactorLoading ? (
+                <div className="ai-loading" style={{ marginTop: "20px" }}>
+                  <div className="spinner"></div>
+                  <p>Refactoring codebase across files in parallel…</p>
+                </div>
+              ) : refactorData ? (
+                <div style={{ marginTop: "20px" }}>
+                  <h4>Refactor Summary</h4>
+                  <p>{refactorData.summary}</p>
+                  <h4>Refactored Files ({refactorData.refactoredFiles?.length || 0})</h4>
+                  {refactorData.refactoredFiles?.map((f, i) => (
+                    <div key={i} className="match-card">
+                      <strong>📄 {f.filePath}</strong>
+                      <p className="match-explanation">{f.explanation}</p>
+                      <pre className="snippet-code">{f.newContent.slice(0, 400)}…</pre>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Fundamental Agent 5: Security SAST Auto-Patch Modal */}
+      {showSecModal && (
+        <div className="modal-overlay" onClick={() => setShowSecModal(false)}>
+          <div className="modal-box readme-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>🛡️ SAST Security Audit & Auto-Patcher</h3>
+              <button className="modal-close" onClick={() => setShowSecModal(false)}>
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              {secLoading ? (
+                <div className="ai-loading">
+                  <div className="spinner"></div>
+                  <p>Scanning codebase for OWASP vulnerabilities & security risks…</p>
+                </div>
+              ) : secData ? (
+                <>
+                  <div className="score-card" style={{ marginBottom: "16px" }}>
+                    <div className="score-circle">{secData.securityScore}</div>
+                    <div>
+                      <h4>Security Score</h4>
+                      <p>{secData.vulnerabilitiesFound?.length || 0} vulnerabilities detected</p>
+                    </div>
+                  </div>
+
+                  <h4>Vulnerabilities Audit ({secData.vulnerabilitiesFound?.length || 0})</h4>
+                  {secData.vulnerabilitiesFound?.length === 0 ? (
+                    <p className="muted">Zero security vulnerabilities detected. Code passes SAST audit!</p>
+                  ) : (
+                    secData.vulnerabilitiesFound?.map((v, i) => (
+                      <div key={i} className="review-item critical">
+                        <h5>{v.cveType} ({v.severity})</h5>
+                        <p>📄 {v.filePath}</p>
+                        <p>{v.description}</p>
+                        {v.patchCode && <pre className="suggestion-code">{v.patchCode}</pre>}
+                      </div>
+                    ))
+                  )}
+                </>
+              ) : null}
             </div>
           </div>
         </div>

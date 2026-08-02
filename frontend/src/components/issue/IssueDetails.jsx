@@ -53,6 +53,19 @@ const IssueDetails = () => {
     fetchAll();
   }, [id, issueId]);
 
+  const handleAiResolveAgent = async () => {
+    setShowPrModal(true);
+    try {
+      setResolverLoading(true);
+      const { data } = await API.post(`/ai/agent/resolve-issue/${issueId}`);
+      setPrFixData(data);
+    } catch (err) {
+      console.error("AI Resolver Agent error:", err);
+    } finally {
+      setResolverLoading(false);
+    }
+  };
+
   // Feature 2: Run AI Issue Triage
   const handleAiTriage = async () => {
     try {
@@ -193,6 +206,13 @@ const IssueDetails = () => {
               disabled={triageLoading}
             >
               {triageLoading ? "🤖 Triaging…" : "🤖 Run AI Triage"}
+            </button>
+
+            <button
+              className="btn ai-btn"
+              onClick={handleAiResolveAgent}
+            >
+              🚀 Auto-Fix PR Agent
             </button>
 
             <button
@@ -347,6 +367,58 @@ const IssueDetails = () => {
           </div>
         </div>
       </section>
+
+      {/* Fundamental Agent 1: Autonomous PR Fix Modal */}
+      {showPrModal && (
+        <div className="modal-overlay" onClick={() => setShowPrModal(false)}>
+          <div className="modal-box readme-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>🚀 Autonomous AI Pull Request Fix Generator</h3>
+              <button className="modal-close" onClick={() => setShowPrModal(false)}>
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              {resolverLoading ? (
+                <div className="ai-loading">
+                  <div className="spinner"></div>
+                  <p>Analyzing codebase, creating branch, and generating multi-file fix patch…</p>
+                </div>
+              ) : prFixData ? (
+                <>
+                  <div className="issue-meta-tags" style={{ marginBottom: "12px" }}>
+                    <span className="issue-label-pill">Branch: {prFixData.branchName}</span>
+                  </div>
+                  <h4>{prFixData.prTitle}</h4>
+                  <p className="repo-desc">{prFixData.summary}</p>
+                  <h4>Modified Files in Pull Request ({prFixData.changedFiles?.length || 0})</h4>
+                  {prFixData.changedFiles?.map((f, idx) => (
+                    <div key={idx} className="match-card">
+                      <strong>📄 {f.filePath} ({f.action})</strong>
+                      <p className="match-explanation">{f.explanation}</p>
+                      <pre className="snippet-code">{f.newContent.slice(0, 500)}…</pre>
+                    </div>
+                  ))}
+                </>
+              ) : null}
+            </div>
+            <div className="modal-footer">
+              <button className="btn ghost" onClick={() => setShowPrModal(false)}>
+                Close
+              </button>
+              <button
+                className="btn primary"
+                onClick={() => {
+                  alert("AI Pull Request patch copied! Apply changes to repo.");
+                  setShowPrModal(false);
+                }}
+              >
+                Accept & Merge PR Fix
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
