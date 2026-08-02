@@ -1,0 +1,153 @@
+.issues-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  color: white;
+}
+
+.issues-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.issues-title {
+  font-size: 38px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.issues-subtitle {
+  margin-top: 6px;
+  opacity: 0.7;
+  font-size: 14px;
+}
+
+.issues-toolbar {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.filter-btn {
+  padding: 10px 16px;
+  border-radius: 14px;
+  border: 1px solid #333;
+  background: #111;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.filter-btn:hover {
+  background: #1a1a1a;
+}
+
+.filter-btn.active {
+  background: #2ecc71;
+  color: black;
+  border: none;
+}
+
+.btn {
+  padding: 10px 16px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn.ghost {
+  background: transparent;
+  border: 1px solid #333;
+  color: white;
+}
+
+.btn.primary {
+  background: #2ecc71;
+  color: black;
+}
+
+.btn.danger {
+  background: #e74c3c;
+  color: white;
+}
+
+/* MODAL */
+
+.issue-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 999;
+}
+
+.issue-modal {
+  width: 100%;
+  max-width: 520px;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 18px;
+  padding: 20px;
+}
+
+.issue-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.issue-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.issue-label {
+  display: block;
+  font-weight: 600;
+  margin: 12px 0 6px;
+  opacity: 0.8;
+}
+
+.issue-input,
+.issue-textarea {
+  width: 100%;
+  background: #0c0c0c;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: white;
+  outline: none;
+}
+
+.issue-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.issue-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.issue-error {
+  background: rgba(231, 76, 60, 0.15);
+  border: 1px solid rgba(231, 76, 60, 0.4);
+  padding: 10px 12px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  color: #ffb3b3;
+}

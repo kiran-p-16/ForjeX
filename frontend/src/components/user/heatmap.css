@@ -1,0 +1,68 @@
+/* ===== HEATMAP CONTAINER ===== */
+.heatmap-container {
+  width: 100%;
+}
+
+/* ===== TITLE ===== */
+.heatmap-container h4 {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* ===== HEATMAP SCROLL AREA ===== */
+.heatmap-scroll {
+  width: 100%;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+.heatmap-scroll svg {
+  width: 100% !important;
+  height: auto;
+}
+
+.w-heatmap-week text {
+  opacity: 1 !important;
+  fill: #ffffff !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+
+  filter:
+    drop-shadow(0 0 1px #000)
+    drop-shadow(0 0 2px #000);
+}
+
+/* ===== FORCE MONTH LABEL VISIBILITY ===== */
+.w-heatmap-month text {
+  opacity: 1 !important;
+  fill: #ffffff !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+
+  filter:
+    drop-shadow(0 0 1px #000)
+    drop-shadow(0 0 2px #000);
+}
+
+/* ===== CUSTOM LEGEND ===== */
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #c9d1d9;
+  margin-top: 10px;
+}
+
+.heatmap-legend .scale {
+  display: flex;
+  gap: 4px;
+}
+
+.heatmap-legend .scale i {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}

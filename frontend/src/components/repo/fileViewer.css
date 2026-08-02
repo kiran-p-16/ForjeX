@@ -1,0 +1,70 @@
+.file-wrapper {
+  padding: 36px;
+  min-height: calc(100vh - 78px);
+  background: #0d1117;
+  color: #c9d1d9;
+}
+
+.file-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 18px;
+  align-items: flex-start;
+}
+
+.file-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  color: white;
+}
+
+.file-path {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #8b949e;
+}
+
+.file-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.file-card {
+  border-radius: 18px;
+  padding: 18px;
+  border: 1px solid #30363d;
+  background: linear-gradient(180deg, #161b22, #0d1117);
+}
+
+.file-content {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #c9d1d9;
+}
+
+.file-editor {
+  width: 100%;
+  min-height: 520px;
+  resize: vertical;
+  border-radius: 14px;
+  border: 1px solid #30363d;
+  background: #0b0f14;
+  color: #c9d1d9;
+  padding: 14px;
+  font-size: 14px;
+  line-height: 1.6;
+  outline: none;
+}
+
+.file-error {
+  padding: 40px;
+  text-align: center;
+  color: #f85149;
+  font-size: 18px;
+}

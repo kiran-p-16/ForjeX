@@ -1,0 +1,201 @@
+#dashboard {
+  min-height: calc(100vh - 78px);
+  display: grid;
+  grid-template-columns: 320px 1fr 280px;
+  gap: 48px;
+  padding: 36px;
+  background: #0d1117;
+  color: #c9d1d9;
+}
+
+/* ===== PANELS (BASE) ===== */
+.panel {
+  border-radius: 20px;
+  padding: 24px;
+}
+
+/* ===== SUGGESTED ===== */
+.suggested-panel {
+  background: linear-gradient(180deg, #161b22, #0d1117);
+  border: 1px solid #30363d;
+}
+
+/* ===== MAIN ===== */
+.main-panel {
+  background: transparent;
+}
+
+/* ===== ACTIVITY ===== */
+.activity-panel {
+  background: #0b0f14;
+  border: 1px solid #21262d;
+}
+
+/* HEADINGS */
+h2, h3 {
+  color: white;
+  margin-bottom: 18px;
+}
+
+/* ===== ACTIVITY LIST ===== */
+.activity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px;
+}
+
+.activity-list li {
+  font-size: 13px;
+  padding: 10px 0;
+  border-bottom: 1px solid #21262d;
+  color: #8b949e;
+}
+
+.activity-btn {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  background: #21262d;
+  color: white;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+
+/* ===== REPO CARD ===== */
+.repo-card {
+  background: linear-gradient(180deg, #161b22, #0d1117);
+  border: 1px solid #30363d;
+  border-radius: 18px;
+  padding: 18px;
+  margin-top: 20px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border 0.25s ease;
+}
+
+.repo-card:hover {
+  transform: translateY(-6px);
+  border-color: #58a6ff;
+  box-shadow: 0 12px 30px rgba(88, 166, 255, 0.12);
+}
+
+/* ===== SUGGESTED CARD ===== */
+.suggested-card {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+/* GRID */
+.repo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 26px;
+}
+
+/* HEADER */
+.repo-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* TEXT */
+.repo-desc {
+  font-size: 13px;
+  color: #8b949e;
+  margin: 10px 0;
+}
+
+.owner {
+  font-size: 12px;
+  color: #8b949e;
+}
+
+/* FOOTER */
+.repo-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-top: 14px;
+}
+
+/* STAR */
+.star-btn {
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  color: #6e7681;
+  cursor: pointer;
+}
+
+.star-btn.active {
+  color: #f7cc53;
+}
+
+/* BADGES */
+.badge {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.badge.public {
+  background: rgba(46, 160, 67, 0.15);
+  color: #3fb950;
+}
+
+.badge.private {
+  background: rgba(248, 81, 73, 0.15);
+  color: #f85149;
+}
+
+/* EMPTY */
+.empty-state {
+  border: 2px dashed #30363d;
+  border-radius: 18px;
+  padding: 48px;
+  text-align: center;
+}
+
+.create-btn {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: #238636;
+  color: white;
+  font-weight: 600;
+}
+.create-btn:hover {
+  background: #2ea043;
+}
+.create-btn:active {
+  background: #196c2e;
+}
+
+.main-panel {
+  background: transparent;
+}
+
+#dashboard a {
+  color: inherit;
+}
+#dashboard {
+  min-height: 100vh;
+}
+
+.panel {
+  background-color: #0d1117;
+}
+
+.repo-link {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+}
+/*OVERRIDE PRIMER PANEL*/
+#dashboard .panel {
+  background: transparent !important;
+  padding: 24px;
+  border-radius: 20px;
+}

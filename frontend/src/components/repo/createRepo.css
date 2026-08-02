@@ -1,0 +1,100 @@
+.create-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 48px 16px;
+  background: #0d1117;
+  min-height: calc(100vh - 78px);
+}
+
+.create-card {
+  width: 100%;
+  max-width: 720px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 16px;
+  padding: 32px;
+}
+
+.create-card h2 {
+  color: white;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  color: #8b949e;
+  margin-bottom: 24px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+label {
+  color: #c9d1d9;
+  font-weight: 500;
+}
+
+input,
+textarea {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: white;
+  font-size: 14px;
+}
+
+textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.visibility {
+  margin-top: 12px;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.visibility label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px;
+  cursor: pointer;
+}
+
+.visibility label:not(:last-child) {
+  border-bottom: 1px solid #30363d;
+}
+
+.visibility input {
+  margin-right: 8px;
+}
+
+.visibility strong {
+  color: white;
+}
+
+.visibility span {
+  font-size: 12px;
+  color: #8b949e;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.error {
+  background: rgba(248, 81, 73, 0.15);
+  border: 1px solid rgba(248, 81, 73, 0.4);
+  padding: 10px;
+  border-radius: 8px;
+  color: #f85149;
+  font-size: 13px;
+}
