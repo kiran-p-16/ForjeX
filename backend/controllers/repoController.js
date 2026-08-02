@@ -168,6 +168,17 @@ async function toggleStarRepository(req, res) {
     await user.save();
     await repo.save();
 
+    if (starred && repo.owner.toString() !== userId) {
+      const { sendNotification } = require("./notificationController");
+      sendNotification(req.app, {
+        recipient: repo.owner,
+        sender: userId,
+        type: "star",
+        repository: repo._id,
+        message: `${user.username} starred your repository ${repo.name}.`,
+      });
+    }
+
     res.json({ starred, stars: repo.stars });
   } catch (err) {
     console.error("STAR ERROR:", err.message);

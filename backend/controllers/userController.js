@@ -202,6 +202,15 @@ async function followUser(req, res) {
           $addToSet: { followers: currentId },
         }),
       ]);
+
+      const { sendNotification } = require("./notificationController");
+      sendNotification(req.app, {
+        recipient: targetId,
+        sender: currentId,
+        type: "follow",
+        message: `${current.username} started following you.`,
+      });
+
       return res.json({ following: true });
     }
   } catch (err) {

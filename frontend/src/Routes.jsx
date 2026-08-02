@@ -10,6 +10,8 @@ import RepositoryPage from "./components/repo/Repository";
 import FileViewer from "./components/repo/FileViewer";
 import IssuesList from "./components/issue/IssueList";
 import IssueDetails from "./components/issue/IssueDetails";
+import Discover from "./components/discover/Discover";
+import Collaborate from "./components/collaborate/Collaborate";
 
 const Protected = ({ children }) => {
   const { currentUser, authLoading } = useAuth();
@@ -34,6 +36,8 @@ return children;
 
 const ProjectRoutes=()=>useRoutes([
 {path:"/",element:<Protected><Dashboard/></Protected>},
+{path:"/discover",element:<Protected><Discover/></Protected>},
+{path:"/collaborate",element:<Protected><Collaborate/></Protected>},
 {path:"/auth",element:<Public><Login/></Public>},
 {path:"/signup",element:<Public><Signup/></Public>},
 {path:"/profile",element:<Protected><Profile/></Protected>},
