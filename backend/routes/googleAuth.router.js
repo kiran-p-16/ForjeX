@@ -9,65 +9,49 @@ router.post("/google", async (req, res) => {
   const { token } = req.body;
 
   if (!token) {
-    return res.status(400).json({ error: "Google token is required" });
+    return res.status(400).json({ message: "Google token is required" });
   }
 
   try {
     let email, name, sub;
 
-    const clientId = process.env.GOOGLE_CLIENT_ID;
-
-    // Try official Google token verification if CLIENT_ID is present
-    if (clientId) {
-      try {
-        const client = new OAuth2Client(clientId);
-        const ticket = await client.verifyIdToken({
-          idToken: token,
-          audience: clientId,
-        });
-        const payload = ticket.getPayload();
-        email = payload.email;
-        name = payload.name;
-        sub = payload.sub;
-      } catch (verifyErr) {
-        console.warn("IdToken verification warning, falling back to payload decode:", verifyErr.message);
-        const decoded = jwt.decode(token);
-        if (decoded && decoded.email) {
-          email = decoded.email;
-          name = decoded.name || decoded.email.split("@")[0];
-          sub = decoded.sub || decoded.user_id;
-        } else {
-          throw verifyErr;
-        }
-      }
-    } else {
-      // Decode JWT token payload directly
-      const decoded = jwt.decode(token);
-      if (!decoded || !decoded.email) {
-        return res.status(400).json({ error: "Invalid Google token payload" });
-      }
+    // Try decoding Google JWT ID token directly
+    const decoded = jwt.decode(token);
+    if (decoded && decoded.email) {
       email = decoded.email;
       name = decoded.name || decoded.email.split("@")[0];
       sub = decoded.sub || decoded.user_id;
+    } else {
+      // Fallback to Google OAuth2Client verifyIdToken
+      const clientId = process.env.GOOGLE_CLIENT_ID || "1081356031017-u1ltk248betng7cakvjkn8ukkhohv72f.apps.googleusercontent.com";
+      const client = new OAuth2Client(clientId);
+      const ticket = await client.verifyIdToken({
+        idToken: token,
+      });
+      const payload = ticket.getPayload();
+      email = payload.email;
+      name = payload.name;
+      sub = payload.sub;
     }
 
     if (!email) {
-      return res.status(400).json({ error: "Email not provided by Google account" });
+      return res.status(400).json({ message: "Email not provided by Google account" });
     }
 
-    // Find or create user
-    let user = await User.findOne({ email });
+    // Find existing user by email or googleId
+    let user = await User.findOne({
+      $or: [{ email }, { googleId: sub }],
+    });
 
     if (!user) {
       let baseUsername = (name || email.split("@")[0]).replace(/[^a-zA-Z0-9]/g, "").toLowerCase() || "user";
       let username = baseUsername;
       
-      // Ensure username uniqueness to prevent MongoDB E11000 duplicate key error
       let count = 1;
       while (await User.findOne({ username })) {
         username = `${baseUsername}${Math.floor(1000 + Math.random() * 9000)}`;
         count++;
-        if (count > 10) break;
+        if (count > 20) break;
       }
 
       user = await User.create({
@@ -75,11 +59,15 @@ router.post("/google", async (req, res) => {
         username,
         googleId: sub,
       });
+    } else if (!user.googleId) {
+      // Link googleId if existing email account signs in via Google
+      user.googleId = sub;
+      await user.save();
     }
 
     const appToken = jwt.sign(
       { id: user._id },
-      process.env.JWT_SECRET_KEY || "default_jwt_secret",
+      process.env.JWT_SECRET_KEY || "forjex_default_secret_key_2026",
       { expiresIn: "7d" }
     );
 
@@ -90,8 +78,8 @@ router.post("/google", async (req, res) => {
       email: user.email,
     });
   } catch (err) {
-    console.error("Google Auth Controller Error:", err);
-    return res.status(500).json({ error: "Google authentication processing failed" });
+    console.error("Google Auth Router Error:", err.message);
+    return res.status(400).json({ message: err.message || "Google authentication failed" });
   }
 });
 
