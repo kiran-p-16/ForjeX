@@ -88,52 +88,29 @@ function startServer() {
     message: { error: "Too many requests, please try again later" },
   });
   app.use(limiter);
+  // Pure custom CORS middleware - guarantees requesting origin reflection without third-party package overrides
   app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    if (origin && (origin.includes("vercel.app") || origin.includes("localhost"))) {
-      res.setHeader("Access-Control-Allow-Origin", origin);
-      res.setHeader("Access-Control-Allow-Credentials", "true");
-      res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-      res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    }
+    const origin = req.headers.origin || "https://forje-x.vercel.app";
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+
     if (req.method === "OPTIONS") {
-      return res.sendStatus(204);
+      return res.status(204).end();
     }
     next();
   });
-
-  const allowedOrigins = (process.env.FRONTEND_URL || "")
-    .split(",")
-    .map((url) => url.trim())
-    .concat([
-      "https://forje-x.vercel.app",
-      "https://forjex.vercel.app",
-      "http://localhost:5173",
-      "http://localhost:3000",
-    ])
-    .filter(Boolean);
-
-  const corsOptions = {
-    origin: function (origin, callback) {
-      // Always reflect the requesting origin for any vercel app or localhost
-      if (!origin || (origin && (origin.includes("vercel.app") || origin.includes("localhost")))) {
-        callback(null, origin || "https://forje-x.vercel.app");
-      } else if (allowedOrigins.includes(origin)) {
-        callback(null, origin);
-      } else {
-        callback(null, origin || "https://forje-x.vercel.app");
-      }
-    },
-    credentials: true,
-  };
-
-  app.use(cors(corsOptions));
 
   app.use("/", mainRouter);
 
   const httpServer = http.createServer(app);
   const io = new Server(httpServer, {
-    cors: corsOptions,
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"],
+      credentials: true,
+    },
   });
 
   io.on("connection", (socket) => {
