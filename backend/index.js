@@ -98,11 +98,7 @@ function startServer() {
 
   const corsOptions = {
     origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
-        callback(null, true);
-      } else {
-        callback(null, true); // Permissive for production deployment
-      }
+      callback(null, origin || "*");
     },
     credentials: true,
   };
