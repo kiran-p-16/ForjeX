@@ -115,10 +115,13 @@ function startServer() {
 
   const corsOptions = {
     origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin) || (origin && origin.includes("vercel.app"))) {
-        callback(null, true);
+      // Always reflect the requesting origin for any vercel app or localhost
+      if (!origin || (origin && (origin.includes("vercel.app") || origin.includes("localhost")))) {
+        callback(null, origin || "https://forje-x.vercel.app");
+      } else if (allowedOrigins.includes(origin)) {
+        callback(null, origin);
       } else {
-        callback(new Error("Not allowed by CORS"));
+        callback(null, origin || "https://forje-x.vercel.app");
       }
     },
     credentials: true,
