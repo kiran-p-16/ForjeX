@@ -88,27 +88,26 @@ function startServer() {
     message: { error: "Too many requests, please try again later" },
   });
   app.use(limiter);
-  // Pure custom CORS middleware - guarantees requesting origin reflection without third-party package overrides
-  app.use((req, res, next) => {
-    const origin = req.headers.origin || "https://forje-x.vercel.app";
-    res.setHeader("Access-Control-Allow-Origin", origin);
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    "https://forje-x.vercel.app",
+    "https://forjex.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:3000",
+  ].filter(Boolean);
 
-    if (req.method === "OPTIONS") {
-      return res.status(204).end();
-    }
-    next();
-  });
+  const corsOptions = {
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin) || (origin && origin.includes("vercel.app"))) {
+        callback(null, true);
+      } else {
+        callback(null, true);
+      }
+    },
+    credentials: true,
+  };
 
-  app.get("/cors-check", (req, res) => {
-    res.json({
-      version: "v2-native-cors",
-      requestOrigin: req.headers.origin || "none",
-      frontendUrl: process.env.FRONTEND_URL || "none",
-    });
-  });
+  app.use(cors(corsOptions));
 
   app.use("/", mainRouter);
 
