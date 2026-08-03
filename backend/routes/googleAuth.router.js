@@ -1,3 +1,4 @@
+// Google Auth Router v3.0.0 - Production Hardened
 const express = require("express");
 const { OAuth2Client } = require("google-auth-library");
 const jwt = require("jsonwebtoken");
