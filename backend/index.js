@@ -102,6 +102,14 @@ function startServer() {
     next();
   });
 
+  app.get("/cors-check", (req, res) => {
+    res.json({
+      version: "v2-native-cors",
+      requestOrigin: req.headers.origin || "none",
+      frontendUrl: process.env.FRONTEND_URL || "none",
+    });
+  });
+
   app.use("/", mainRouter);
 
   const httpServer = http.createServer(app);
