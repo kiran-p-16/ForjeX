@@ -88,20 +88,32 @@ function startServer() {
     message: { error: "Too many requests, please try again later" },
   });
   app.use(limiter);
-  app.use(cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    "https://forje-x.vercel.app",
+    "https://forjex.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:3000",
+  ].filter(Boolean);
+
+  const corsOptions = {
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+        callback(null, true);
+      } else {
+        callback(null, true); // Permissive for production deployment
+      }
+    },
     credentials: true,
-  }));
+  };
+
+  app.use(cors(corsOptions));
 
   app.use("/", mainRouter);
 
   const httpServer = http.createServer(app);
   const io = new Server(httpServer, {
-    cors: {
-      origin: process.env.FRONTEND_URL || "http://localhost:5173",
-      methods: ["GET", "POST"],
-      credentials: true,
-    },
+    cors: corsOptions,
   });
 
   io.on("connection", (socket) => {
