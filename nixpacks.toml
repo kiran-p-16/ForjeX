@@ -1,2 +1,5 @@
+[phases.build]
+cmds = ["echo 'Backend ready'"]
+
 [start]
 cmd = "cd backend && node index.js start"
