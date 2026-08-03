@@ -88,17 +88,24 @@ function startServer() {
     message: { error: "Too many requests, please try again later" },
   });
   app.use(limiter);
-  const allowedOrigins = [
-    process.env.FRONTEND_URL,
-    "https://forje-x.vercel.app",
-    "https://forjex.vercel.app",
-    "http://localhost:5173",
-    "http://localhost:3000",
-  ].filter(Boolean);
+  const allowedOrigins = (process.env.FRONTEND_URL || "")
+    .split(",")
+    .map((url) => url.trim())
+    .concat([
+      "https://forje-x.vercel.app",
+      "https://forjex.vercel.app",
+      "http://localhost:5173",
+      "http://localhost:3000",
+    ])
+    .filter(Boolean);
 
   const corsOptions = {
     origin: function (origin, callback) {
-      callback(null, origin || "*");
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
     },
     credentials: true,
   };
