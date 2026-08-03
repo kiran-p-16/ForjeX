@@ -32,8 +32,8 @@ const Login = () => {
       localStorage.setItem("userId", res.data.userId);
       setCurrentUser(res.data.userId);
       navigate("/");
-    } catch {
-      setError("Invalid email or password.");
+    } catch (err) {
+      setError(err.response?.data?.message || err.response?.data?.error || "Invalid email or password.");
     } finally {
       setLoading(false);
     }

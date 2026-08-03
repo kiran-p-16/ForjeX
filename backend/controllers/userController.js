@@ -30,14 +30,14 @@ async function signup(req, res) {
 
     const token = jwt.sign(
       { id: newUser._id },
-      process.env.JWT_SECRET_KEY,
+      process.env.JWT_SECRET_KEY || "forjex_default_secret_key_2026",
       { expiresIn: "7d" }
     );
 
     res.status(201).json({ token, userId: newUser._id });
   } catch (err) {
     console.error("Error during signup:", err.message);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error during signup" });
   }
 }
 
@@ -65,9 +65,11 @@ async function login(req, res) {
       return res.status(400).json({ message: "Invalid credentials!" });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "7d",
-    });
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET_KEY || "forjex_default_secret_key_2026",
+      { expiresIn: "7d" }
+    );
 
     res.json({ token, userId: user._id });
   } catch (err) {

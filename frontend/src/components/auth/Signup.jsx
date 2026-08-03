@@ -39,8 +39,8 @@ const Signup = () => {
       localStorage.setItem("userId", res.data.userId);
       setCurrentUser(res.data.userId);
       navigate("/");
-    } catch {
-      setError("Signup failed. Please try again.");
+    } catch (err) {
+      setError(err.response?.data?.message || err.response?.data?.error || "Signup failed. Please try again.");
     } finally {
       setLoading(false);
     }
