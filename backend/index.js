@@ -88,6 +88,20 @@ function startServer() {
     message: { error: "Too many requests, please try again later" },
   });
   app.use(limiter);
+  app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (origin && (origin.includes("vercel.app") || origin.includes("localhost"))) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+      res.setHeader("Access-Control-Allow-Credentials", "true");
+      res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+      res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    }
+    if (req.method === "OPTIONS") {
+      return res.sendStatus(204);
+    }
+    next();
+  });
+
   const allowedOrigins = (process.env.FRONTEND_URL || "")
     .split(",")
     .map((url) => url.trim())
@@ -101,7 +115,7 @@ function startServer() {
 
   const corsOptions = {
     origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.includes(origin) || (origin && origin.includes("vercel.app"))) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
