@@ -8,4 +8,4 @@ cmds = ["cd backend && npm install"]
 cmds = ["echo 'Backend ready'"]
 
 [start]
-cmd = "cd backend && node index.js start"
+cmd = "node backend/index.js start"
