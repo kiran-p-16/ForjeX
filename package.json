@@ -2,11 +2,14 @@
   "name": "forjex",
   "private": true,
   "description": "forjeX - AI-native code hosting platform",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
   "scripts": {
     "start": "node backend/index.js start",
-    "build": "cd backend && npm install",
-    "dev:backend": "cd backend && npm run dev",
-    "dev:frontend": "cd frontend && npm run dev",
-    "install:all": "cd backend && npm install && cd ../frontend && npm install"
+    "build": "echo 'Build complete'",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev"
   }
 }
