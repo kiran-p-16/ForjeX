@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "start": "node backend/index.js start",
-    "build": "echo 'Build complete'",
+    "build": "npm install",
     "dev:backend": "npm --prefix backend run dev",
     "dev:frontend": "npm --prefix frontend run dev"
   }
