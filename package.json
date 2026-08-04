@@ -3,8 +3,8 @@
   "private": true,
   "description": "forjeX - AI-native code hosting platform",
   "scripts": {
-    "start": "cd backend && node index.js start",
-    "build": "echo 'Backend server ready'",
+    "start": "node backend/index.js start",
+    "build": "cd backend && npm install",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
     "install:all": "cd backend && npm install && cd ../frontend && npm install"
