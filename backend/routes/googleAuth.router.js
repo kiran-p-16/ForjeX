@@ -24,7 +24,7 @@ router.post("/google", async (req, res) => {
       sub = decoded.sub || decoded.user_id;
     } else {
       // Fallback to Google OAuth2Client verifyIdToken
-      const clientId = process.env.GOOGLE_CLIENT_ID || "1081356031017-u1ltk248betng7cakvjkn8ukkhohv72f.apps.googleusercontent.com";
+      const clientId = process.env.GOOGLE_CLIENT_ID || "1081356031017-n1r83d9h52nj38dqds7o3937gjurkg4v.apps.googleusercontent.com";
       const client = new OAuth2Client(clientId);
       const ticket = await client.verifyIdToken({
         idToken: token,

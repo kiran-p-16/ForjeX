@@ -11,7 +11,7 @@ const container = document.getElementById('root');
 const root = createRoot(container);
 
 root.render(
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "1081356031017-u1ltk248betng7cakvjkn8ukkhohv72f.apps.googleusercontent.com"}>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "1081356031017-n1r83d9h52nj38dqds7o3937gjurkg4v.apps.googleusercontent.com"}>
       <ThemeProvider>
         <BaseStyles>
           <AuthProvider>
