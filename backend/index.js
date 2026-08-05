@@ -77,8 +77,12 @@ function startServer() {
     .then(() => {
       console.log("MongoDB connected!");
       console.log("Mongoose connected to DB:", mongoose.connection.name);
-})
-    .catch((err) => console.error("Unable to connect : ", err));
+      global.lastMongoError = null;
+    })
+    .catch((err) => {
+      console.error("Unable to connect : ", err.message);
+      global.lastMongoError = err.message;
+    });
 
   const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,

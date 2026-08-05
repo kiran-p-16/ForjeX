@@ -24,6 +24,8 @@ mainRouter.get("/db-status", (req, res) => {
     dbStatus: states[state] || "Unknown",
     readyState: state,
     dbName: mongoose.connection.name || "None",
+    mongoUriSet: Boolean(process.env.MONGODB_URI),
+    mongoError: global.lastMongoError || null,
   });
 });
 
