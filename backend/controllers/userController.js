@@ -37,7 +37,7 @@ async function signup(req, res) {
     res.status(201).json({ token, userId: newUser._id });
   } catch (err) {
     console.error("Error during signup:", err.message);
-    res.status(500).json({ message: "Server error during signup" });
+    res.status(500).json({ message: err.message || "Database connection error during signup" });
   }
 }
 
@@ -74,7 +74,7 @@ async function login(req, res) {
     res.json({ token, userId: user._id });
   } catch (err) {
     console.error("Error during login:", err.message);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: err.message || "Database connection error during login" });
   }
 }
 

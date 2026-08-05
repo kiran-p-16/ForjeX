@@ -15,6 +15,18 @@ mainRouter.use(aiRouter);
 mainRouter.use(notificationRouter);
 mainRouter.use("/auth", googleAuthRouter);
 
+const mongoose = require("mongoose");
+
+mainRouter.get("/db-status", (req, res) => {
+  const states = { 0: "Disconnected", 1: "Connected", 2: "Connecting", 3: "Disconnecting" };
+  const state = mongoose.connection.readyState;
+  res.json({
+    dbStatus: states[state] || "Unknown",
+    readyState: state,
+    dbName: mongoose.connection.name || "None",
+  });
+});
+
 mainRouter.get("/cors-check", (req, res) => {
   res.json({
     version: "v2-native-cors",
