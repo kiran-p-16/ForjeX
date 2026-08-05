@@ -110,7 +110,7 @@ const Login = () => {
               onError={() => setError("Google login failed")}
               theme="outline"
               size="large"
-              width="100%"
+              width="320"
             />
           </div>
         </div>

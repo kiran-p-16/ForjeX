@@ -126,7 +126,7 @@ const Signup = () => {
               onError={() => setError("Google signup failed")}
               theme="outline"
               size="large"
-              width="100%"
+              width="320"
             />
           </div>
         </div>
