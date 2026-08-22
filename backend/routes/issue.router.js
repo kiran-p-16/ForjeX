@@ -8,7 +8,6 @@ const issueRouter=express.Router();
 issueRouter.post(
 "/issue/create/:id",
 authMiddleware,
-authorizeRepoIssue,
 issueController.createIssue
 );
 

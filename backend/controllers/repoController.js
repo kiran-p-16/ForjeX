@@ -273,13 +273,19 @@ async function deleteFileFromRepo(req, res) {
       return res.status(400).json({ error: "filePath is required" });
     }
 
+    const cleanPath = filePath.replace(/\\/g, "/");
+    const uploadsRoot = path.join(process.cwd(), "uploads", req.params.id);
+    const absolutePath = path.join(uploadsRoot, cleanPath);
+
+    if (!absolutePath.startsWith(uploadsRoot)) {
+      return res.status(400).json({ message: "Invalid file path" });
+    }
+
     repo.content = repo.content.filter((p) => p !== filePath);
     await repo.save();
 
-    const fullPath = path.join("uploads", req.params.id, filePath);
-
-    if (fs.existsSync(fullPath)) {
-      fs.unlinkSync(fullPath);
+    if (fs.existsSync(absolutePath)) {
+      fs.unlinkSync(absolutePath);
     }
 
     res.json({ content: repo.content });

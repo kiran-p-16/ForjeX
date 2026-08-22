@@ -24,6 +24,10 @@ const IssueDetails = () => {
   const [newComment, setNewComment] = useState("");
   const [commentSubmitting, setCommentSubmitting] = useState(false);
 
+  const [showPrModal, setShowPrModal] = useState(false);
+  const [resolverLoading, setResolverLoading] = useState(false);
+  const [prFixData, setPrFixData] = useState(null);
+
   const userId = localStorage.getItem("userId");
 
   const isOwner = useMemo(() => {

@@ -16,23 +16,27 @@ router.post("/google", async (req, res) => {
   try {
     let email, name, sub;
 
-    // Try decoding Google JWT ID token directly
-    const decoded = jwt.decode(token);
-    if (decoded && decoded.email) {
-      email = decoded.email;
-      name = decoded.name || decoded.email.split("@")[0];
-      sub = decoded.sub || decoded.user_id;
-    } else {
-      // Fallback to Google OAuth2Client verifyIdToken
+    try {
       const clientId = process.env.GOOGLE_CLIENT_ID || "1081356031017-n1r83d9h52nj38dqds7o3937gjurkg4v.apps.googleusercontent.com";
       const client = new OAuth2Client(clientId);
       const ticket = await client.verifyIdToken({
         idToken: token,
+        audience: clientId
       });
       const payload = ticket.getPayload();
       email = payload.email;
       name = payload.name;
       sub = payload.sub;
+    } catch (verifyErr) {
+      // Fallback to decode if verification fails
+      const decoded = jwt.decode(token);
+      if (decoded && decoded.email) {
+        email = decoded.email;
+        name = decoded.name || decoded.email.split("@")[0];
+        sub = decoded.sub || decoded.user_id;
+      } else {
+        throw new Error("Invalid Google token");
+      }
     }
 
     if (!email) {

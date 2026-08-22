@@ -20,20 +20,27 @@ const authorizeRepoIssue = async (req, res, next) => {
 
   const id = req.params.id;
 
-  const repo = await Repository.findById(id);
-  if (repo) {
-    if (repo.owner.toString() !== req.userId) {
+  try {
+    const repo = await Repository.findById(id);
+    if (repo) {
+      if (repo.owner.toString() !== req.userId) {
+        return res.status(403).json({ error: "Forbidden" });
+      }
+      return next();
+    }
+
+    const issue = await Issue.findById(id).populate("repository");
+    if (!issue) {
+      return res.status(404).json({ error: "Not found" });
+    }
+    if (issue.repository.owner.toString() !== req.userId) {
       return res.status(403).json({ error: "Forbidden" });
     }
-    return next();
-  }
 
-  const issue = await Issue.findById(id).populate("repository");
-  if (!issue || issue.repository.owner.toString() !== req.userId) {
-    return res.status(403).json({ error: "Forbidden" });
+    next();
+  } catch (err) {
+    return res.status(400).json({ error: "Bad Request" });
   }
-
-  next();
 };
 
 module.exports = {
