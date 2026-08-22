@@ -37,6 +37,10 @@ async function signup(req, res) {
     res.status(201).json({ token, userId: newUser._id });
   } catch (err) {
     console.error("Error during signup:", err.message);
+    if (err.name === "ValidationError") {
+      const msg = Object.values(err.errors).map((e) => e.message).join(", ");
+      return res.status(400).json({ message: msg });
+    }
     res.status(500).json({ message: err.message || "Database connection error during signup" });
   }
 }

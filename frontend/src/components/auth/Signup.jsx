@@ -22,8 +22,18 @@ const Signup = () => {
     e.preventDefault();
     setError("");
 
-    if (!email || !username || !password) {
+    if (!email.trim() || !username.trim() || !password) {
       setError("All fields are required");
+      return;
+    }
+
+    if (username.trim().length < 2) {
+      setError("Username must be at least 2 characters");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
       return;
     }
 
