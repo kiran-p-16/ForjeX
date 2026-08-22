@@ -29,7 +29,7 @@ const Navbar = ({ allRepos = [] }) => {
 
     fetchNotifications();
 
-    const socket = io(import.meta.env.VITE_API_URL || "http://localhost:3000");
+    const socket = io(import.meta.env.VITE_API_URL || "https://web-production-8073b.up.railway.app");
     socket.emit("joinRoom", userId);
 
     socket.on("newNotification", (notif) => {
